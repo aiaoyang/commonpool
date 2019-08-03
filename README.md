@@ -2,7 +2,7 @@
 使用方式：
 在自己的函数中创建一个factory函数，将需要生成的连接放入该函数中,然后调用NewPool()函数获得连接池，下面以postgres数据库的连接为例
 
-`
+```
 var (
     factory = func () (io.Closer, error){
         return sql.Open("postgres", fmt.Sprintf("user=%s host=%s dbname=%s sslmode=%s password=%s", user, host, dbname， sslmode, password))
@@ -30,4 +30,4 @@ func main(){
     //如果希望真实的关闭该连接，需要使用MarkUnusable()方法
     //v.(*pool.Conn).MarkUnusable()
 }
-`
+```
