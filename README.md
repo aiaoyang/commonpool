@@ -24,7 +24,7 @@ func main(){
     v.(*pool.Conn).Client.(*sql.DB).DoSomething()
     ...
     
-    //将使用玩的连接放回连接池
+    //将使用完的连接放回连接池
     v.Close()
 
     //如果希望真实的关闭该连接，需要使用MarkUnusable()方法
