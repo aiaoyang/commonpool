@@ -4,8 +4,9 @@
 
 ```
 var (
-    factory = func () (io.Closer, error){
-        return sql.Open("postgres", fmt.Sprintf("user=%s host=%s dbname=%s sslmode=%s password=%s", user, host, dbname， sslmode, password))
+    factory = func () (time.Duration, io.Closer, error){
+        c,err := sql.Open("postgres", fmt.Sprintf("user=%s host=%s dbname=%s sslmode=%s password=%s", user, host, dbname， sslmode, password))
+        return time.Second * 10, c, err
     }
 )
 func main(){
