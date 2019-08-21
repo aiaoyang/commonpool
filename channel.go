@@ -21,7 +21,7 @@ func NewPool(initialCap, maxCap int, factory Factory) (IPool, error) {
 		return nil, errors.New("invalid capacity settings")
 	}
 
-	c := &Pool{
+	p := &Pool{
 		conns:   make(chan *Conn, maxCap),
 		factory: factory,
 		maxSize: maxCap,
@@ -32,10 +32,10 @@ func NewPool(initialCap, maxCap int, factory Factory) (IPool, error) {
 	for i := 0; i < initialCap; i++ {
 		timeout, conn, err := factory()
 		if err != nil {
-			c.Close()
+			p.Close()
 			return nil, fmt.Errorf("factory is not able to fill the pool: %s", err)
 		}
-		c.conns <- c.wrapConn(conn, timeout)
+		p.conns <- p.wrapConn(conn, timeout)
 	}
 
 	return c, nil
