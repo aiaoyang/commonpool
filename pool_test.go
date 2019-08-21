@@ -4,11 +4,13 @@ import (
 	"io"
 	"net"
 	"testing"
+	"time"
 )
 
 var (
-	factory = func() (io.Closer, error) {
-		return net.Dial("tcp", "127.0.0.1:10000")
+	factory = func() (time.Duration, io.Closer, error) {
+		c, err := net.Dial("tcp", "127.0.0.1:10000")
+		return time.Duration(10), c, err
 	}
 )
 
