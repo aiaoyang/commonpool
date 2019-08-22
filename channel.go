@@ -38,7 +38,7 @@ func NewPool(initialCap, maxCap int, factory Factory) (IPool, error) {
 		p.conns <- p.wrapConn(conn, timeout)
 	}
 
-	return c, nil
+	return p, nil
 }
 
 // TODO: pool connection healthcheck
