@@ -30,13 +30,14 @@ func (c *Conn) CheckOK() bool {
 // Close puts the given connects back to the pool instead of closing it.
 func (c *Conn) Close() error {
 	c.mu.RLock()
+	defer c.mu.RUnlock()
 	if c.Client == nil {
 		return nil
 	}
 	if !c.CheckOK() {
-		c.MarkUnusable()
+		c.Client.Close()
+		return nil
 	}
-	defer c.mu.RUnlock()
 	if c.p.Len() == c.p.maxSize {
 		c.Client.Close()
 		//log.Printf("pool is full,closing connection: %v \n", &c)

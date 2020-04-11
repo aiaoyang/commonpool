@@ -7,11 +7,6 @@ import (
 	"time"
 )
 
-// Checker check conn healthy
-// type Checker interface {
-// 	check(io.Closer) bool
-// }
-
 // Factory is a function to create new connections.
 type Factory func() (time.Duration, io.Closer, func(io.Closer) bool, error)
 
@@ -43,29 +38,5 @@ func NewPool(initialCap, maxCap int, factory Factory) (IPool, error) {
 		p.conns <- p.wrapConn(conn, timeout, Checker)
 	}
 
-	// monitor pool healthy
-	// once := &sync.Once{}
-
-	// onceFunc := func() {
-	// 	go func() {
-	// 		for {
-	// 			if p.Len() < initialCap {
-
-	// 				log.Printf("pool size : %d\n", p.Len())
-	// 				timeout, conn, checker, err := factory()
-	// 				if err != nil {
-	// 					conn.Close()
-	// 				}
-	// 				p.conns <- p.wrapConn(conn, timeout, checker)
-	// 				log.Printf("pool size : %d\n", len(p.conns))
-	// 			}
-	// 			time.Sleep(time.Millisecond * 500)
-	// 		}
-	// 	}()
-	// }
-	// once.Do(onceFunc)
 	return p, nil
 }
-
-// TODO: pool connection healthcheck
-//func poolCapacityCheck(p IPool) {}
