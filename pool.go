@@ -41,9 +41,10 @@ type Pool struct {
 	factory Factory
 }
 
-func (p *Pool) wrapConn(conn io.Closer, timeout time.Duration) *Conn {
+func (p *Pool) wrapConn(conn io.Closer, timeout time.Duration, checker func(io.Closer) bool) *Conn {
 	c := &Conn{
 		p:          p,
+		Checker:    checker,
 		activeTime: time.Now(),
 		timeout:    timeout,
 	}
@@ -79,22 +80,22 @@ func (p *Pool) Get() (*Conn, error) {
 			//log.Printf("conn is timeout : %v, now closing it\n", &conn)
 			conn.Client.Close()
 			//log.Printf("conn : %v is closed, now generating new conn\n", &conn)
-			timeout, c, err := factory()
+			timeout, c, checker, err := factory()
 			if err != nil {
 				return nil, err
 			}
-			return p.wrapConn(c, timeout), nil
+			return p.wrapConn(c, timeout, checker), nil
 		}
 		//log.Printf("return conn : %v\n", &conn)
 
 		return conn, nil
 	default:
-		timeout, conn, err := factory()
+		timeout, c, checker, err := factory()
 		if err != nil {
 			return nil, err
 		}
 
-		return p.wrapConn(conn, timeout), nil
+		return p.wrapConn(c, timeout, checker), nil
 	}
 }
 

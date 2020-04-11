@@ -6,19 +6,36 @@ import (
 	"time"
 )
 
+// Checker check conn healthy
+// // var Checker func(io.Closer) bool
+// type Checker interface {
+// 	check(io.Closer) bool
+// }
+
 // Conn is a wrapper around io.Closer
 type Conn struct {
 	Client     io.Closer
+	Checker    func(io.Closer) bool
 	mu         sync.RWMutex
 	p          *Pool
 	activeTime time.Time
 	timeout    time.Duration
 }
 
+// CheckOK check conn health
+func (c *Conn) CheckOK() bool {
+	return c.Checker(c.Client)
+}
+
 // Close puts the given connects back to the pool instead of closing it.
 func (c *Conn) Close() error {
-
 	c.mu.RLock()
+	if c.Client == nil {
+		return nil
+	}
+	if !c.CheckOK() {
+		c.MarkUnusable()
+	}
 	defer c.mu.RUnlock()
 	if c.p.Len() == c.p.maxSize {
 		c.Client.Close()
